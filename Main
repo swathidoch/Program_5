@@ -1,0 +1,31 @@
+; Main.asm
+; Continuously reads from x2600 making sure its not reading duplicate symbols.
+; Processes the symbol based on the program description of mRNA processing.
+
+        .ORIG x4000
+
+; initialize the stack pointer
+	LD  R6,StackBtm
+	AND R2,R2,#0
+	ADD R3,R2,#3	; R3 is counter
+	ADD R2,R2,#-1	; R2 is freshness
+	STI R2,GLOB
+
+; set up the keyboard interrupt vector table entry
+	LD  R1,KBISR
+	STI R1,KBIVT 					; keyboard interrupt vector table
+
+; enable keyboard interrupts
+	LD  R1, KBIEN
+	STI R1, KBSR
+
+; start of actual program
+
+KBSR  .FILL  xFE00
+KBIEN .FILL  x4000
+KBISR   .FILL x5000
+KBIVT   .FILL x0180
+StackBtm .FILL x3000
+GLOB	.FILL  x6000
+
+        .END
