@@ -1,7 +1,6 @@
 ; Main.asm
 ; Continuously reads from x2600 making sure its not reading duplicate symbols.
 ; Processes the symbol based on the program description of mRNA processing.
-;can you see this
 
         .ORIG x4000
 
@@ -30,50 +29,3 @@ StackBtm .FILL x3000
 GLOB	.FILL  x6000
 
         .END
-
-; ISR.asm
-; Keyboard ISR runs when a key is struck.
-; Checks for a valid RNA symbol and places it at x2600.
-
-	.ORIG x2000
-	ST R0, SVR0
-	ST R1, SVR1
-	GETC
-
-;is R0 = A?
-	LD R1, NOTA
-	ADD R1, R0, R1
-	BRz VALID
-
-;is R0 = C?
-	LD R1, NOTC
-	ADD R1, R0, R1
-	BRz VALID
-
-;is R0 = G?
-	LD R1, NOTG
-	ADD R1, R0, R1
-	BRz VALID
-
-;is R0 = U?
-	LD R1, NOTU
-	ADD R1, R0, R1
-	BRz VALID
-	BR DONE
-
-VALID
-	STI R0, STORE
-
-DONE
-	LD R0, SVR0
-	LD R1, SVR1
-	RET
-
-NOTA	.FILL x-41
-NOTC	.FILL x-43
-NOTG	.FILL x-47
-NOTU	.FILL x-55
-STORE	.FILL x2600
-SVR0	.BLKW 1
-SVR1	.BLKW 1
-	.END
