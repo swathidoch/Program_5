@@ -21,11 +21,11 @@
 
 ; start of actual program
 
-KBSR  .FILL  xFE00
-KBIEN .FILL  x4000
-KBISR   .FILL x5000
-KBIVT   .FILL x0180
+KBSR     .FILL xFE00
+KBIEN    .FILL x4000
+KBISR    .FILL x5000
+KBIVT    .FILL x0180
 StackBtm .FILL x3000
-GLOB	.FILL  x6000
+GLOB	 .FILL x6000
 
         .END
