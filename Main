@@ -1,6 +1,7 @@
 ; Main.asm
 ; Continuously reads from x2600 making sure its not reading duplicate symbols.
 ; Processes the symbol based on the program description of mRNA processing.
+;can you see this
 
         .ORIG x4000
 
