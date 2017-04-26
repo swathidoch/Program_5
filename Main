@@ -1,4 +1,4 @@
- Main.asm
+Main.asm
 ; Continuously reads from x2600 making sure its not reading duplicate symbols.
 ; Processes the symbol based on the program description of mRNA processing.
 
@@ -24,7 +24,7 @@
 KBSR     .FILL xFE00
 KBIEN    .FILL x4000
 KBISR    .FILL x5000
-KBIVT    .FILL x0180
+KBIVE    .FILL x0180
 StckBtm .FILL x3000
 GLOB	 .FILL x6000
 
