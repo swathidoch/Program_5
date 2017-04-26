@@ -6,26 +6,33 @@ Main.asm
 
 ; initialize the stack pointer
 	LD  R6,StckBtm
+	
+;global location where ISR puts char is initialized to 0
 	AND R2,R2,#0
-	ADD R3,R2,#3	; R3 is counter
-	ADD R2,R2,#-1	; R2 is freshness
 	STI R2,GLOB
 
 ; set up the keyboard interrupt vector table entry
 	LD  R1,KBISR
-	STI R1,KBIVE 					; keyboard interrupt vector entry
-
+	STI R1,KBIVE 					
+	;tells computer what action to take when key is struck, exescutes code at x2000
+	
 ; enable keyboard interrupts
 	LD  R1, KBIEN
 	STI R1, KBSR
 
 ; start of actual program
+LOOP	LDI R0, GLOB; R0 <- m[x2600]
+	BRz LOOP
+	OUT
+	BRnzp LOOP
+	
+	HALT
 
 KBSR     .FILL xFE00
 KBIEN    .FILL x4000
-KBISR    .FILL x5000
+KBISR    .FILL x2000
 KBIVE    .FILL x0180
-StckBtm .FILL x3000
-GLOB	 .FILL x6000
+StckBtm  .FILL x3000
+GLOB	 .FILL x2600
 
         .END
