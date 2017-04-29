@@ -26,6 +26,36 @@ LOOP	LDI R0, GLOB		; R0 <-- char
 	STI R0, GLOB
 	BR LOOP
 	
+;FSM
+; 1. looks for start codon (AUG)	   (iteration 2)
+	;if not found, continues looking (ISR will print out the chars to console)
+	;if found, prints "|"
+	
+	;initial state (first character)
+		;keeps going until it finds A
+	;second state  (second character)
+		;if A is found, stays
+		;if C,G is found goes back to initial state
+		;if U is found, goes to third state
+	;third state   (third character)
+		;if A,C,U is found goes back to initial state
+		;if G is found, goes to fourth state
+	;fourth state (start codon found)
+		;prints "|"
+		
+ST1	LDI R3, GLOB  ; R3 <- m[x2600]
+	LD  R4, NOTA  
+	ADD R4, R3, R4
+	BRnp ST1      ;if R3 != A, stay in the state
+	
+	
+	
+	
+; 2. looks for stop codon (UAG, UAA, UGA)  (iteration 3,4)
+	;if not found, continue looking for stop codons
+	;if found, program terminates
+	
+	
 	HALT
 KBSR	.FILL xFE00
 KBIEN	.FILL x4000
