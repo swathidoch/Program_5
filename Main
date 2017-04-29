@@ -1,38 +1,87 @@
-Main.asm
+; Main.asm
 ; Continuously reads from x2600 making sure its not reading duplicate symbols.
 ; Processes the symbol based on the program description of mRNA processing.
 
-        .ORIG x4000
+	.ORIG x4000
 
 ; initialize the stack pointer
-	LD  R6,StckBtm
-	
-;global location where ISR puts char is initialized to 0
-	AND R2,R2,#0
-	STI R2,GLOB
+	LD R6, StckBtm
+; global location where ISR puts character is initialized to 0
+	AND R2, R2, #0
+	STI R2, GLOB
 
 ; set up the keyboard interrupt vector table entry
-	LD  R1,KBISR
-	STI R1,KBIVE 					
-	;tells computer what action to take when key is struck, exescutes code at x2000
-	
+	LD R1, KBISR
+	STI R1, KBIVE 		; keyboard interrupt vector entry
+
 ; enable keyboard interrupts
-	LD  R1, KBIEN
+	LD R1, KBIEN
 	STI R1, KBSR
 
 ; start of actual program
-LOOP	LDI R0, GLOB; R0 <- m[x2600]
+LOOP	LDI R0, GLOB		; R0 <-- char
 	BRz LOOP
 	OUT
-	BRnzp LOOP
+	LD R0, ZR
+	STI R0, GLOB
+	BR LOOP
 	
 	HALT
+KBSR	.FILL xFE00
+KBIEN	.FILL x4000
+KBISR	.FILL x2000
+KBIVE	.FILL x0180
+StckBtm	.FILL x4000
+GLOB	.FILL x2600
+ZR	.FILL #0
+	.END
 
-KBSR     .FILL xFE00
-KBIEN    .FILL x4000
-KBISR    .FILL x2000
-KBIVE    .FILL x0180
-StckBtm  .FILL x3000
-GLOB	 .FILL x2600
+; ISR.asm
+; Keyboard ISR runs when a key is struck.
+; Checks for a valid RNA symbol and places it at x2600.
 
-        .END
+	.ORIG x2000
+	ST R0, SVR0
+	ST R1, SVR1
+	LDI R0, KBDR	; R0 <-- user typed character
+
+;is R0 = A?
+	LD R1, NEGA
+	ADD R1, R0, R1
+	BRz VALID
+
+;is R0 = C?
+	LD R1, NEGC
+	ADD R1, R0, R1
+	BRz VALID
+
+;is R0 = G?
+	LD R1, NEGG
+	ADD R1, R0, R1
+	BRz VALID
+
+;is R0 = U?
+	LD R1, NEGU
+	ADD R1, R0, R1
+	BRz VALID
+	BR DONE
+
+VALID
+	STI R0, STORE
+
+DONE
+	LD R0, SVR0
+	LD R1, SVR1
+	LD R7, RETU
+	RET
+
+NEGA	.FILL x-41
+NEGC	.FILL x-43
+NEGG	.FILL x-47
+NEGU	.FILL x-55
+KBDR	.FILL xFE02
+STORE	.FILL x2600
+RETU	.FILL x4005
+SVR0	.BLKW 1
+SVR1	.BLKW 1
+	.END
